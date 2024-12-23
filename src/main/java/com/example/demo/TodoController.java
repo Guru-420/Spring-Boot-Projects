@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -12,16 +14,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class TodoController {
+
+    private TodoService todoService;
+    private TodoService todoService2;
     private static List<TodoDemo> todoDemoList;
 
-    public TodoController() {
+    public TodoController(@Qualifier("FakeTodoService") TodoService todoService,@Qualifier("AnotherTodoService") TodoService todoService2) {
+        this.todoService=todoService;
+        this.todoService2=todoService2;
         todoDemoList = new ArrayList<>();
         todoDemoList.add(new TodoDemo(1, 1, "Gaurav Sharma", true));
         todoDemoList.add(new TodoDemo(1, 2, "Navneet Namdev", false));
+        System.out.println(todoService.doSomething());
+        System.out.println(todoService2.doSomething());
     }
 
     @GetMapping("/todos")
-    public List<TodoDemo> getAllTodos() {
+    public List<TodoDemo> getAllTodos(@RequestParam(required = false,defaultValue = "false") boolean isCompleted) {
+        System.out.println("Completed: "+isCompleted);
         return todoDemoList;
     }
 
